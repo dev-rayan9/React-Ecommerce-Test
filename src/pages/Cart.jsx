@@ -173,7 +173,7 @@ const Cart = () => {
                           >
                             <div style={{ color: '#2563eb', fontWeight: 600, fontSize: '1.18rem', textAlign: 'center' }}>${item.price}</div>
                           </div>
-                          <div
+                          {/* <div
                             style={{
                               background: (item.inStock === false || item.stock === 0) ? '#fee2e2' : '#d1fae5',
                               borderRadius: '0.6rem',
@@ -198,7 +198,7 @@ const Cart = () => {
                             <span style={{ color: (item.inStock === false || item.stock === 0) ? '#ef4444' : '#22c55e', fontWeight: 500, fontSize: '1.13rem', textAlign: 'center' }}>
                               {(item.inStock === false || item.stock === 0) ? 'Out of Stock' : 'In Stock'}
                             </span>
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                       <hr style={styles.hr} />
