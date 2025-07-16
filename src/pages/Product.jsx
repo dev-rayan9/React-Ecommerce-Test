@@ -62,6 +62,10 @@ const Product = () => {
   };
 
   const ShowProduct = () => {
+    // Centralized inStock logic (same as Products.jsx)
+    const inStock = product.stock !== undefined
+      ? product.stock > 0
+      : (product.rating?.count > 0 && product.id % 3 !== 0);
     return (
       <>
         <div className="container my-5 py-2">
@@ -84,9 +88,19 @@ const Product = () => {
               </p>
               <h3 className="display-6  my-4">${product.price}</h3>
               <p className="lead">{product.description}</p>
+              {/* Stock status */}
+              <div style={{ marginBottom: '1rem' }}>
+                {inStock ? (
+                  <span style={{ color: '#22c55e', fontWeight: 600 }}>In Stock</span>
+                ) : (
+                  <span style={{ color: '#ef4444', fontWeight: 600 }}>Out of Stock</span>
+                )}
+              </div>
               <button
                 className="btn btn-outline-dark"
                 onClick={() => addProduct(product)}
+                disabled={!inStock}
+                style={!inStock ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
               >
                 Add to Cart
               </button>
