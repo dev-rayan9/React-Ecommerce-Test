@@ -28,7 +28,10 @@ const Products = () => {
   const dispatch = useDispatch();
 
   const addProduct = (product) => {
-    dispatch(addCart(product));
+    // Attach inStock property based on API data (simulate out-of-stock for some products for demo)
+    // For demo: mark every 3rd product as out of stock
+    const inStock = product.rating?.count > 0 && product.id % 3 !== 0;
+    dispatch(addCart({ ...product, inStock }));
   };
 
   useEffect(() => {
@@ -84,8 +87,11 @@ const Products = () => {
         layout
       >
         {paginated.map((product) => {
+          // Make inStock dynamic: use product.stock if available, otherwise simulate
+          const inStock = product.stock !== undefined
+            ? product.stock > 0
+            : (product.rating?.count > 0 && product.id % 3 !== 0); // fallback for fakestoreapi
           const variants = product.size || product.color || [];
-          const inStock = product.rating?.count > 0;
           return (
             <motion.div
               key={product.id}
@@ -108,6 +114,7 @@ const Products = () => {
                   toast.success("Added to cart");
                   addProduct(product);
                 }}
+                productId={product.id}
               />
             </motion.div>
           );
@@ -273,7 +280,7 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     gap: 8,
-    margin: '2.5rem 0 1.5rem 0',
+    margin: '2.5rem 0 3.5rem 0', 
     fontFamily: "'Poppins', sans-serif",
   },
   pageBtn: {

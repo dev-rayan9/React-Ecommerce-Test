@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const cartIcon = (
   <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M6.5 17a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM2 2h2.5l2.1 10.39a2 2 0 002 1.61h6.88a2 2 0 001.98-1.75l.7-6.25H5.12" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -29,6 +30,7 @@ const ProductCard = ({
   inStock = true,
   onAddToCart,
   disabled = false,
+  productId, // <-- add productId prop
 }) => {
   const buttonRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
@@ -134,6 +136,30 @@ const ProductCard = ({
               </motion.span>
               <span style={{ marginLeft: 8 }}>Add to Cart</span>
             </motion.button>
+          </div>
+          {/* View Product button below Add to Cart */}
+          <div style={{ width: "100%", marginTop: "0.7rem" }}>
+            <Link
+              to={`/product/${productId}`}
+              style={{
+                display: "block",
+                width: "100%",
+                padding: "0.8rem 0",
+                borderRadius: "0.6rem",
+                border: "1.5px solid #0ea5e9",
+                background: "#fff",
+                color: "#0ea5e9",
+                fontWeight: 500,
+                fontSize: "1.08rem",
+                textAlign: "center",
+                textDecoration: "none",
+                transition: "background 0.2s, color 0.2s, border 0.2s",
+                marginTop: 0,
+                fontFamily: "'Poppins', sans-serif",
+              }}
+            >
+              View Product
+            </Link>
           </div>
         </div>
         <style>{`
@@ -478,6 +504,7 @@ ProductCard.propTypes = {
   inStock: PropTypes.bool,
   onAddToCart: PropTypes.func,
   disabled: PropTypes.bool,
+  productId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export default ProductCard; 

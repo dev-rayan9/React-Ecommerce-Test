@@ -37,6 +37,12 @@ const handleCart = (state = getInitialCart(), action) => {
       localStorage.setItem("cart", JSON.stringify(updatedCart));
       return updatedCart;
 
+    case "REMOVEITEM":
+      // Remove the product entirely from the cart
+      updatedCart = state.filter((x) => x.id !== product.id);
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      return updatedCart;
+
     default:
       return state;
   }

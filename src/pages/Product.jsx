@@ -143,22 +143,19 @@ const Product = () => {
                       {item.title.substring(0, 15)}...
                     </h5>
                   </div>
-                  {/* <ul className="list-group list-group-flush">
-                    <li className="list-group-item lead">${product.price}</li>
-                  </ul> */}
-                  <div className="card-body">
-                    <Link
-                      to={"/product/" + item.id}
-                      className="btn btn-dark m-1"
-                    >
-                      Buy Now
-                    </Link>
+                  <div className="card-body d-flex flex-column align-items-center">
                     <button
-                      className="btn btn-dark m-1"
+                      className="btn btn-dark mb-2"
                       onClick={() => addProduct(item)}
                     >
                       Add to Cart
                     </button>
+                    <Link
+                      to={"/product/" + item.id}
+                      className="btn btn-outline-dark"
+                    >
+                      View Product
+                    </Link>
                   </div>
                 </div>
               );

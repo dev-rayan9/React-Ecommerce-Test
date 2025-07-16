@@ -2,6 +2,7 @@ import React from "react";
 import { Footer, Navbar } from "../components";
 import { useSelector, useDispatch } from "react-redux";
 import { addCart, delCart } from "../redux/action";
+import { removeCart } from "../redux/action";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -13,6 +14,14 @@ const plusIcon = (
 );
 const crossIcon = (
   <svg width="18" height="18" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="9" fill="#e0e7ef"/><path d="M6.5 6.5l5 5M11.5 6.5l-5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round"/></svg>
+);
+
+const redCrossIcon = (
+  <svg width="18" height="18" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="9" fill="#fee2e2"/><path d="M6 6l6 6M12 6l-6 6" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/></svg>
+);
+
+const greenCheckIcon = (
+  <svg width="18" height="18" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="9" fill="#d1fae5"/><path d="M5 9.5l3 3 5-5" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
 );
 
 const Cart = () => {
@@ -33,12 +42,16 @@ const Cart = () => {
       </div>
     );
   };
-
+ 
   const addItem = (product) => {
     dispatch(addCart(product));
   };
   const removeItem = (product) => {
     dispatch(delCart(product));
+  };
+
+  const removeProduct = (product) => {
+    dispatch(removeCart(product));
   };
 
   const ShowCart = () => {
@@ -87,7 +100,7 @@ const Cart = () => {
                           <div style={styles.itemTitle}>{item.title}</div>
                         </div>
                         <div style={styles.qtyCol}>
-                          <div style={{ width: 140, minWidth: 140, maxWidth: 140, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                          <div style={{ width: 180, minWidth: 180, maxWidth: 180, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
                             <div style={{
                               ...styles.qtyBox,
                               width: '100%',
@@ -95,6 +108,9 @@ const Cart = () => {
                               maxWidth: '100%',
                               boxSizing: 'border-box',
                               justifyContent: 'center',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 8,
                             }}>
                               <motion.button
                                 style={styles.qtyBtn}
@@ -111,33 +127,77 @@ const Cart = () => {
                               >
                                 {plusIcon}
                               </motion.button>
+                              <motion.button
+                                style={{
+                                  border: '1.5px solid #ef4444',
+                                  background: '#fff',
+                                  color: '#ef4444',
+                                  borderRadius: '0.6rem',
+                                  padding: '0.35rem 0.6rem',
+                                  marginLeft: 8,
+                                  cursor: 'pointer',
+                                  outline: 'none',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  transition: 'background 0.2s, border 0.2s',
+                                }}
+                                whileHover={{ scale: 1.12, background: '#fee2e2' }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => removeProduct(item)}
+                                title="Remove item"
+                              >
+                                <i className="fa fa-trash" style={{ fontSize: 18, color: '#ef4444' }}></i>
+                              </motion.button>
                             </div>
-                            <div style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              background: '#f0f6ff',
-                              color: '#2563eb',
+                          </div>
+                          <div
+                            style={{
+                              background: (item.inStock === false || item.stock === 0) ? '#fee2e2' : '#f0fdf4',
                               borderRadius: '0.6rem',
-                              padding: '0.32em 1.1em 0.32em 0.7em',
-                              fontWeight: 500,
-                              fontSize: '1.13rem',
+                              padding: '0.7em 1em',
                               boxShadow: '0 1px 4px rgba(37,99,235,0.04)',
                               fontFamily: "'Poppins', sans-serif",
-                              letterSpacing: '0.01em',
                               border: '1.5px solid #e0e7ef',
-                              gap: 8,
-                              width: '100%',
+                              width: 180,
                               minWidth: 0,
-                              maxWidth: '100%',
+                              maxWidth: 180,
                               boxSizing: 'border-box',
+                              marginTop: 8,
+                              marginLeft: 'auto',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
                               justifyContent: 'center',
-                            }}>
-                              <span style={{ color: '#222', fontWeight: 500, fontSize: '1.13rem', marginRight: 4 }}>{item.qty}</span>
-                              <span style={{ display: 'inline-flex', alignItems: 'center', marginRight: 6, verticalAlign: 'middle' }}>
-                                <svg width="18" height="18" fill="none" viewBox="0 0 18 18"><circle cx="9" cy="9" r="9" fill="#e0e7ef"/><path d="M6.5 6.5l5 5M11.5 6.5l-5 5" stroke="#2563eb" strokeWidth="2" strokeLinecap="round"/></svg>
-                              </span>
-                              <span style={{ color: '#2563eb', fontWeight: 500, fontSize: '1.13rem' }}>${item.price}</span>
-                            </div>
+                              gap: 10,
+                            }}
+                          >
+                            <div style={{ color: '#2563eb', fontWeight: 600, fontSize: '1.18rem', textAlign: 'center' }}>${item.price}</div>
+                          </div>
+                          <div
+                            style={{
+                              background: (item.inStock === false || item.stock === 0) ? '#fee2e2' : '#d1fae5',
+                              borderRadius: '0.6rem',
+                              padding: '0.5em 1em',
+                              width: 180,
+                              minWidth: 0,
+                              maxWidth: 180,
+                              boxSizing: 'border-box',
+                              margin: '8px  0 auto',
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 8,
+                              fontFamily: "'Poppins', sans-serif",
+                              border: '1.5px solid #e0e7ef',
+                            }}
+                          >
+                            <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                              {(item.inStock === false || item.stock === 0) ? redCrossIcon : greenCheckIcon}
+                            </span>
+                            <span style={{ color: (item.inStock === false || item.stock === 0) ? '#ef4444' : '#22c55e', fontWeight: 500, fontSize: '1.13rem', textAlign: 'center' }}>
+                              {(item.inStock === false || item.stock === 0) ? 'Out of Stock' : 'In Stock'}
+                            </span>
                           </div>
                         </div>
                       </div>
