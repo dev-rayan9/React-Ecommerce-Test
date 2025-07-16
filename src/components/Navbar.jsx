@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux'
 
 const Navbar = () => {
     const state = useSelector(state => state.handleCart)
-    // Calculate total quantity in cart
     const totalQty = state.reduce((acc, item) => acc + (item.qty || 1), 0);
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light py-3 sticky-top">

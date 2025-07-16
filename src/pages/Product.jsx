@@ -62,7 +62,6 @@ const Product = () => {
   };
 
   const ShowProduct = () => {
-    // Centralized inStock logic (same as Products.jsx)
     const inStock = product.stock !== undefined
       ? product.stock > 0
       : (product.rating?.count > 0 && product.id % 3 !== 0);
@@ -88,7 +87,6 @@ const Product = () => {
               </p>
               <h3 className="display-6  my-4">${product.price}</h3>
               <p className="lead">{product.description}</p>
-              {/* Stock status */}
               <div style={{ marginBottom: '1rem' }}>
                 {inStock ? (
                   <span style={{ color: '#22c55e', fontWeight: 600 }}>In Stock</span>
@@ -143,7 +141,6 @@ const Product = () => {
         <div className="py-4 my-4" style={{ padding: 0, margin: 0 }}>
           <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-start', alignItems: 'stretch', flexWrap: 'nowrap', padding: 0, margin: 0 }}>
             {similarProducts.map((item) => {
-              // Centralized inStock logic
               const inStock = item.stock !== undefined
                 ? item.stock > 0
                 : (item.rating?.count > 0 && item.id % 3 !== 0);
@@ -188,7 +185,6 @@ const Product = () => {
                       {item.title.length > 22 ? item.title.substring(0, 20) + '...' : item.title}
                     </h5>
                   </div>
-                  {/* Stock status */}
                   <div style={{ marginBottom: 8 }}>
                     {inStock ? (
                       <span style={{ color: '#22c55e', fontWeight: 600, fontSize: '0.98rem' }}>In Stock</span>

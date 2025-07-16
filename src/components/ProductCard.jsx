@@ -30,7 +30,8 @@ const ProductCard = ({
   inStock = true,
   onAddToCart,
   disabled = false,
-  productId, // <-- add productId prop
+  productId, 
+  showZoom = true,
 }) => {
   const buttonRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
@@ -71,21 +72,23 @@ const ProductCard = ({
         <div style={styles.flexCol}>
           <div style={styles.imageWrapper}>
             <img src={image} alt={name} style={styles.image} />
-            <AnimatePresence>
-              {hovered && (
-                <motion.button
-                  style={styles.zoomBtn}
-                  initial={{ opacity: 0, scale: 0.7 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.7 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  onClick={e => { e.stopPropagation(); setShowModal(true); }}
-                  tabIndex={-1}
-                >
-                  {zoomIcon}
-                </motion.button>
-              )}
-            </AnimatePresence>
+            {showZoom && (
+              <AnimatePresence>
+                {hovered && (
+                  <motion.button
+                    style={styles.zoomBtn}
+                    initial={{ opacity: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.7 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    onClick={e => { e.stopPropagation(); setShowModal(true); }}
+                    tabIndex={-1}
+                  >
+                    {zoomIcon}
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            )}
           </div>
           <div style={styles.body}>
             <h3 style={styles.name} title={name}>{name}</h3>
@@ -137,7 +140,6 @@ const ProductCard = ({
               <span style={{ marginLeft: 8 }}>Add to Cart</span>
             </motion.button>
           </div>
-          {/* View Product button below Add to Cart */}
           <div style={{ width: "100%", marginTop: "0.7rem" }}>
             <Link
               to={`/product/${productId}`}
@@ -180,30 +182,32 @@ const ProductCard = ({
           button { position: relative; overflow: hidden; font-family: 'Poppins', sans-serif; }
         `}</style>
       </motion.div>
-      <AnimatePresence>
-        {showModal && (
-          <motion.div
-            style={styles.modalOverlay}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => setShowModal(false)}
-          >
+      {showZoom && (
+        <AnimatePresence>
+          {showModal && (
             <motion.div
-              style={styles.modalContent}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              style={styles.modalOverlay}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              onClick={e => e.stopPropagation()}
+              onClick={() => setShowModal(false)}
             >
-              <button style={styles.closeBtn} onClick={() => setShowModal(false)}>{closeIcon}</button>
-              <img src={image} alt={name} style={styles.modalImage} />
+              <motion.div
+                style={styles.modalContent}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={e => e.stopPropagation()}
+              >
+                <button style={styles.closeBtn} onClick={() => setShowModal(false)}>{closeIcon}</button>
+                <img src={image} alt={name} style={styles.modalImage} />
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      )}
     </>
   );
 };
@@ -505,6 +509,7 @@ ProductCard.propTypes = {
   onAddToCart: PropTypes.func,
   disabled: PropTypes.bool,
   productId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  showZoom: PropTypes.bool,
 };
 
 export default ProductCard; 
