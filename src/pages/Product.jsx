@@ -140,33 +140,99 @@ const Product = () => {
   const ShowSimilarProduct = () => {
     return (
       <>
-        <div className="py-4 my-4">
-          <div className="d-flex">
+        <div className="py-4 my-4" style={{ padding: 0, margin: 0 }}>
+          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-start', alignItems: 'stretch', flexWrap: 'nowrap', padding: 0, margin: 0 }}>
             {similarProducts.map((item) => {
+              // Centralized inStock logic
+              const inStock = item.stock !== undefined
+                ? item.stock > 0
+                : (item.rating?.count > 0 && item.id % 3 !== 0);
               return (
-                <div key={item.id} className="card mx-4 text-center">
+                <div
+                  key={item.id}
+                  style={{
+                    background: '#fff',
+                    border: '1.5px solid #e5e7eb',
+                    borderRadius: '1.2rem',
+                    boxShadow: '0 2px 12px rgba(37,99,235,0.07)',
+                    minWidth: 390,
+                    maxWidth: 390,
+                    // flex: '0 0 180px',
+                    margin: 0,
+                    padding: '1.2rem 1rem 1.2rem 1rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    transition: 'box-shadow 0.2s, transform 0.2s',
+                    cursor: 'pointer',
+                  }}
+                  onMouseOver={e => {
+                    e.currentTarget.style.boxShadow = '0 6px 24px rgba(37,99,235,0.13)';
+                    e.currentTarget.style.transform = 'translateY(-4px) scale(1.03)';
+                  }}
+                  onMouseOut={e => {
+                    e.currentTarget.style.boxShadow = '0 2px 12px rgba(37,99,235,0.07)';
+                    e.currentTarget.style.transform = 'none';
+                  }}
+                >
                   <img
-                    className="card-img-top p-3"
+                    className="card-img-top p-2"
                     src={item.image}
                     alt="Card"
-                    height={300}
-                    width={300}
+                    height={160}
+                    width={160}
+                    style={{ objectFit: 'contain', borderRadius: '0.7rem', marginBottom: '0.7rem', background: '#f8fafc' }}
                   />
-                  <div className="card-body">
-                    <h5 className="card-title">
-                      {item.title.substring(0, 15)}...
+                  <div style={{ width: '100%', textAlign: 'center', marginBottom: 8 }}>
+                    <h5 style={{ fontSize: '1.08rem', fontWeight: 600, margin: 0, color: '#222', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {item.title.length > 22 ? item.title.substring(0, 20) + '...' : item.title}
                     </h5>
                   </div>
-                  <div className="card-body d-flex flex-column align-items-center">
+                  {/* Stock status */}
+                  <div style={{ marginBottom: 8 }}>
+                    {inStock ? (
+                      <span style={{ color: '#22c55e', fontWeight: 600, fontSize: '0.98rem' }}>In Stock</span>
+                    ) : (
+                      <span style={{ color: '#ef4444', fontWeight: 600, fontSize: '0.98rem' }}>Out of Stock</span>
+                    )}
+                  </div>
+                  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 8 }}>
                     <button
-                      className="btn btn-dark mb-2"
-                      onClick={() => addProduct(item)}
+                      className="btn"
+                      onClick={() => inStock && addProduct(item)}
+                      disabled={!inStock}
+                      style={{
+                        background: inStock ? '#2563eb' : '#e5e7eb',
+                        color: inStock ? '#fff' : '#b6c3d1',
+                        border: 'none',
+                        borderRadius: '0.6rem',
+                        fontWeight: 600,
+                        fontSize: '1rem',
+                        padding: '0.5rem 0',
+                        width: '100%',
+                        cursor: inStock ? 'pointer' : 'not-allowed',
+                        boxShadow: inStock ? '0 1px 4px rgba(37,99,235,0.08)' : 'none',
+                        transition: 'all 0.18s',
+                        marginBottom: 0,
+                      }}
                     >
                       Add to Cart
                     </button>
                     <Link
                       to={"/product/" + item.id}
-                      className="btn btn-outline-dark"
+                      className="btn"
+                      style={{
+                        background: '#fff',
+                        color: '#2563eb',
+                        border: '1.5px solid #2563eb',
+                        borderRadius: '0.6rem',
+                        fontWeight: 600,
+                        fontSize: '1rem',
+                        padding: '0.5rem 0',
+                        width: '100%',
+                        textDecoration: 'none',
+                        transition: 'all 0.18s',
+                      }}
                     >
                       View Product
                     </Link>
