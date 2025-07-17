@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const cartIcon = (
   <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M6.5 17a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM2 2h2.5l2.1 10.39a2 2 0 002 1.61h6.88a2 2 0 001.98-1.75l.7-6.25H5.12" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -20,6 +20,10 @@ const outStockIcon = (
   <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="#ef4444"/><path d="M7 7l6 6M13 7l-6 6" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
 );
 
+const checkIcon = (
+  <svg width="22" height="22" fill="none" viewBox="0 0 22 22"><circle cx="11" cy="11" r="11" fill="#22c55e"/><path d="M7 11.5l3 3 5-5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+);
+
 const ProductCard = ({
   image,
   name,
@@ -36,6 +40,10 @@ const ProductCard = ({
   const buttonRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [cartAnim, setCartAnim] = useState(false);
+  const [cartIconAnim, setCartIconAnim] = useState(false);
+  const [showCheck, setShowCheck] = useState(false);
+  const navigate = useNavigate();
   
   const handleButtonClick = (e) => {
     if (!inStock || disabled) return;
@@ -51,6 +59,27 @@ const ProductCard = ({
     if (ripple) ripple.remove();
     button.appendChild(circle);
     onAddToCart();
+  };
+
+  const handleCartClick = (e) => {
+    if (!inStock || disabled) return;
+    setCartIconAnim(true);
+  };
+
+  // Animation end handler
+  const handleCartAnimComplete = () => {
+    setCartAnim(false);
+    onAddToCart();
+    navigate('/cart');
+  };
+
+  const handleCartIconAnimComplete = () => {
+    setCartIconAnim(false);
+    onAddToCart();
+    setShowCheck(true);
+    setTimeout(() => {
+      setShowCheck(false);
+    }, 2000);
   };
 
   return (
@@ -118,50 +147,153 @@ const ProductCard = ({
               ))}
             </select>
           )}
-          <div style={styles.buttonRow}>
+          <div style={{ ...styles.buttonRow, gap: 12, flexDirection: 'row', justifyContent: 'center', marginTop: '1.2rem' }}>
             <motion.button
               ref={buttonRef}
+              className="cart-advanced-gradient-btn"
               style={{
-                ...styles.button,
+                ...styles.cartCircleButton,
                 ...(inStock && !disabled ? {} : styles.buttonDisabled),
+                position: 'relative',
+                zIndex: 1,
+                overflow: 'hidden',
+                background: showCheck ? '#22c55e' : (cartIconAnim ? '#22c55e' : '#0ea5e9'),
+                transition: 'background 0.3s',
               }}
-              whileHover={inStock && !disabled ? { scale: 1.03, background: "#0369a1" } : {}}
-              whileTap={inStock && !disabled ? { scale: 0.98 } : {}}
-              onClick={handleButtonClick}
+              whileHover={inStock && !disabled ? {
+                scale: 1.11,
+                boxShadow: '0 8px 32px 0 rgba(34,197,94,0.18)',
+              } : {}}
+              whileTap={inStock && !disabled ? { scale: 0.97 } : {}}
+              onClick={handleCartClick}
               disabled={!inStock || disabled}
+              aria-label="Add to Cart"
             >
+              <AnimatePresence mode="wait">
+                {!showCheck && (
               <motion.span
+                    key="cart"
                 style={styles.cartIcon}
-                whileHover={{ x: 4, scale: 1.15 }}
-                transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                    animate={cartIconAnim ? { x: 60, opacity: 0, transition: { duration: 0.5, ease: [0.4, 0.8, 0.2, 1] } } : { x: 0, opacity: 1 }}
+                    initial={{ x: 0, opacity: 1 }}
+                    exit={{ x: 60, opacity: 0, transition: { duration: 0.5 } }}
+                    onAnimationComplete={() => { if (cartIconAnim) handleCartIconAnimComplete(); }}
               >
                 {cartIcon}
               </motion.span>
-              <span style={{ marginLeft: 8 }}>Add to Cart</span>
+                )}
+                {showCheck && (
+                  <motion.span
+                    key="check"
+                    style={styles.cartIcon}
+                    initial={{ scale: 0.7, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1, transition: { duration: 0.35, type: 'spring', stiffness: 300, damping: 18 } }}
+                    exit={{ scale: 0.7, opacity: 0, transition: { duration: 0.2 } }}
+                  >
+                    {checkIcon}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </motion.button>
-          </div>
-          <div style={{ width: "100%", marginTop: "0.7rem" }}>
-            <Link
-              to={`/product/${productId}`}
+            <motion.a
+              href={`/product/${productId}`}
+              className="advanced-gradient-btn"
               style={{
-                display: "block",
-                width: "100%",
-                padding: "0.8rem 0",
-                borderRadius: "0.6rem",
-                border: "1.5px solid #0ea5e9",
-                background: "#fff",
-                color: "#0ea5e9",
-                fontWeight: 500,
-                fontSize: "1.08rem",
-                textAlign: "center",
-                textDecoration: "none",
-                transition: "background 0.2s, color 0.2s, border 0.2s",
-                marginTop: 0,
-                fontFamily: "'Poppins', sans-serif",
+                ...styles.iconButton,
+                flex: 1,
+                background: 'linear-gradient(90deg, #fff 0%, #fff 100%)',
+                // color: '#0ea5e9', // Remove inline color to avoid override
+                border: '2px solid #0ea5e9',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textDecoration: 'none',
+                fontWeight: 700,
+                fontSize: '1.13rem',
+                minWidth: 0,
+                maxWidth: '100%',
+                overflow: 'hidden',
+                fontFamily: "'Montserrat', 'Poppins', 'Inter', 'Quicksand', sans-serif",
+                letterSpacing: '0.01em',
+                boxShadow: '0 1px 6px rgba(14,165,233,0.04)',
+                position: 'relative',
+                zIndex: 1,
+                transition: 'color 0.22s cubic-bezier(.4,2,.6,1), border 0.22s cubic-bezier(.4,2,.6,1)',
               }}
+              whileHover={{
+                scale: 1.07,
+                boxShadow: '0 8px 32px 0 rgba(37,99,235,0.18)',
+              }}
+              whileTap={{ scale: 0.97 }}
             >
-              View Product
-            </Link>
+              <span className="advanced-gradient-btn-text">View Product</span>
+            </motion.a>
+            <style>{`
+              @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+              .advanced-gradient-btn {
+                position: relative;
+                overflow: hidden;
+                border-radius: 1rem;
+                transition: box-shadow 0.28s cubic-bezier(.4,2,.6,1), border 0.22s cubic-bezier(.4,2,.6,1);
+                isolation: isolate;
+              }
+              .advanced-gradient-btn::before {
+                content: '';
+                position: absolute;
+                left: 0; top: 0; right: 0; bottom: 0;
+                z-index: 0;
+                background: linear-gradient(90deg, #0ea5e9 0%, #2563eb 100%);
+                transform: translateX(-100%);
+                transition: transform 0.55s cubic-bezier(.4,2,.6,1);
+                border-radius: 1rem;
+              }
+              .advanced-gradient-btn:hover::before {
+                transform: translateX(0);
+              }
+              .advanced-gradient-btn span, .advanced-gradient-btn {
+                position: relative;
+                z-index: 1;
+                transition: color 0.22s cubic-bezier(.4,2,.6,1), text-shadow 0.22s cubic-bezier(.4,2,.6,1);
+              }
+              .advanced-gradient-btn-text {
+                color: rgb(56, 57, 60);
+              }
+              .advanced-gradient-btn:hover,
+              .advanced-gradient-btn:hover span {
+                text-shadow: 0 2px 16px #2563eb, 0 0px 2px #fff;
+                border-color: #2563eb;
+              }
+              .advanced-gradient-btn:active {
+                box-shadow: 0 2px 8px 0 rgba(37,99,235,0.13);
+              }
+              .advanced-gradient-btn:hover .advanced-gradient-btn-text {
+                color: #fff !important;
+              }
+              .cart-advanced-gradient-btn {
+                position: relative;
+                overflow: hidden;
+                transition: box-shadow 0.28s cubic-bezier(.4,2,.6,1), border 0.22s cubic-bezier(.4,2,.6,1);
+                isolation: isolate;
+              }
+              .cart-advanced-gradient-btn::before {
+                content: '';
+                position: absolute;
+                left: 0; top: 0; right: 0; bottom: 0;
+                z-index: 0;
+                background: linear-gradient(90deg, #22c55e 0%, #0ea5e9 100%);
+                transform: translateX(-100%);
+                transition: transform 0.55s cubic-bezier(.4,2,.6,1);
+                border-radius: 100px;
+              }
+              .cart-advanced-gradient-btn:hover::before {
+                transform: translateX(0);
+              }
+              .cart-advanced-gradient-btn > span, .cart-advanced-gradient-btn {
+                position: relative;
+                z-index: 1;
+                transition: color 0.22s cubic-bezier(.4,2,.6,1), text-shadow 0.22s cubic-bezier(.4,2,.6,1);
+              }
+            `}</style>
           </div>
         </div>
         <style>{`
@@ -404,8 +536,35 @@ const styles = {
   },
   buttonRow: {
     display: "flex",
-    alignItems: "flex-end",
+    alignItems: "center",
     width: "100%",
+    justifyContent: "center",
+    gap: 12,
+    marginTop: "1.2rem",
+  },
+  iconButton: {
+    width: 52,
+    height: 52,
+    minWidth: 52,
+    minHeight: 52,
+    maxWidth: 52,
+    maxHeight: 52,
+    borderRadius: "100px",
+    background: "#0ea5e9",
+    color: "#fff",
+    border: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "1.18rem",
+    cursor: "pointer",
+    transition: "background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s, transform 0.18s",
+    boxShadow: "0 1px 6px rgba(14,165,233,0.07)",
+    outline: "none",
+    fontFamily: "'Poppins', sans-serif",
+    position: "relative",
+    overflow: "hidden",
+    padding: 0,
   },
   button: {
     width: "100%",
@@ -495,6 +654,30 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     transition: "box-shadow 0.2s, border 0.2s, background 0.2s",
+  },
+  cartCircleButton: {
+    width: 52,
+    height: 52,
+    minWidth: 52,
+    minHeight: 52,
+    maxWidth: 52,
+    maxHeight: 52,
+    borderRadius: '50%',
+    background: "#0ea5e9",
+    color: "#fff",
+    border: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "1.18rem",
+    cursor: "pointer",
+    transition: "background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s, transform 0.18s",
+    boxShadow: "0 1px 6px rgba(14,165,233,0.07)",
+    outline: "none",
+    fontFamily: "'Poppins', sans-serif",
+    position: "relative",
+    overflow: "hidden",
+    padding: 0,
   },
 };
 
